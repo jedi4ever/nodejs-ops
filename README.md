@@ -25,11 +25,11 @@
 ## don't run as root:
 - use process.setuid, gid - <http://blog.liftsecurity.io/post/37388272578/writing-secure-express-js-apps>
 
-   http.createServer(app).listen(app.get('port'), function(){
-     console.log("Express server listening on port " + app.get('port'));
-     process.setgid(config.gid);
-     process.setuid(config.uid);
-   });
+     http.createServer(app).listen(app.get('port'), function(){
+       console.log("Express server listening on port " + app.get('port'));
+       process.setgid(config.gid);
+       process.setuid(config.uid);
+     });
 
 - or sudo in your start script
 - or use authbind or similar for non-priviledged users
