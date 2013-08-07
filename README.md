@@ -31,9 +31,33 @@
  process.setuid(config.uid);
 });```
 
-
 - or sudo in your start script
 - or use authbind or similar for non-priviledged users
+
+# Testing
+- mocha for mocha-watch
+- sinon for spies, mocks, stubs
+- nock for HTTP testing
+- zombie for testing 
+- phantomjs
+- passport-stub
+
+- mocha, vows, expect, ...
+- zombie - http testing
+- for socketio (force new connection)
+
+use a grunt setup
+
+# Versioning & Packaging
+- use semver versioning in package.json
+- shrinkwrap (freeze your dependencies)
+
+- dependencies
+- optionalDependencies
+- [peerDependencies: use for plugins](http://blog.nodejs.org/2013/02/07/peer-dependencies/)
+
+- npm pack
+- [bashpack](https://github.com/jedi4ever/bashpack) (turns a nodejs process in bash script)
 
 # Error handling
 <http://snmaynard.com/2012/12/21/node-error-handling/>
@@ -74,23 +98,68 @@ The fundamental benefit of Error objects is that they automatically keep track o
 - it's very common in the nodejs world [to just exist on the exception](http://dshaw.github.io/2012-05-jsday/#/10)
 **Not sure if this still makes sense with domains**
 
-## return on a callback?
+## return on a callback
 
     function(err,callback) {
       if (err) { return callback('err'); }
-      console.log
+      console.log('this will be printed too')
     };
+
+but: in loops or others ``returns`` means something else
 
 ## callback(err) vs emit('error')
 **Not sure yet here**, both? only if callback, only if error listener?
 - <https://groups.google.com/forum/m/#!topic/nodejs/QZa6bookqL0>
 - <https://groups.google.com/forum/m/#!topic/nodejs/hqO0w6XgOlA>
 
+# Logging
+I like <https://github.com/flatiron/winston/>
+
+- Has the logger.log, logger.info, logger.debug etc.
+- Can separate multiple ``tags`` : <https://github.com/jedi4ever/socialapp/blob/master/lib/utils/logger.js>
+
+- Create as a singleton, require and reuse in other modules (module cache will reuse same object)
+
+```var logger = function (options) {
+
+  // If we have already been initialized
+  if (sharedLogger) {
+    return sharedLogger;
+  }
+```
+
+```var logger = require('../utils/logger')().loggers.get('express');
+```
+
+## Multiple Outputs
+- Console, File logging, rotation
+
+- Also has a logstash output:
+  - TCP: <https://github.com/jaakkos/winston-logstash>
+  - UDP: <https://gist.github.com/mbrevoort/5848179>
+
+## Use in express
+```
+    // enable web server logging; pipe those log messages through winston
+    // http://stackoverflow.com/questions/9141358/how-do-i-output-connect-expresss-logger-output-to-winston
+    var winstonStream = {
+      write: function(message, encoding){
+        logger.info(message.slice(0,-1)); //remove newline
+      }
+    };
+    expressApp.use(express.logger({stream: winstonStream}));
+```
+
+## Use in socketio
+
+``` var ioServer = socketIO.listen(webServer, { logger: logger , log:true});```
+
 # Clustering
 ## The basics
+Have multiple nodejs processes listen on the same socket.
 
-The trick? pass the file descriptor from a parent process and have the server.listen reuse that descriptor.
-So multiprocess in their own memory space (but with ENV shared usually)
+The trick? pass the socket/file descriptor from a parent process and have the server.listen reuse that descriptor.
+So **multiprocess** in their own memory space (but with ENV shared usually)
 
 It does not balance, it leaves it to the kernel.
 
@@ -155,25 +224,6 @@ talks about Zero Downtime Crashed by intelligently handling express errors with 
 - Pluribus: <https://github.com/twistdigital/pluribus>
 - Simple node cluster: <https://github.com/audreyt/node-cluster-server>
 
-# Continous delivery
-- Use of forever <https://github.com/nodejitsu/forever> - just kidding
-
-### Fleet: Extending the easy Git -> deploy
-- Initial blogpost on fleet: <http://blog.nodejs.org/2012/05/02/multi-server-continuous-deployment-with-fleet/>
-- Fleet - uses drones & propagit: <https://github.com/substack/fleet>
-- Propagit: A cascading git deployment: <https://github.com/substack/propagit>
-- blogpost on fleet usage: <http://opsite.wordpress.com/2013/05/04/automated-drone-management-system-for-node-js-fleet/>
-
-- Flotilla: <https://npmjs.org/package/flotilla> 
-- All nodejs fleet modules: <https://nodejsmodules.org/new/tags/fleet>
-- <https://github.com/tblobaum/fleet-panel>
-- <https://github.com/carlos8f/fleet>
-- <https://github.com/nisaacson/fleet-stopall>
-- <https://github.com/nisaacson/fleet-atc>
-- <https://github.com/nisaacson/fleet-stopregex>
- 
-Not related, but also cool: EC2-fleet <https://github.com/ashtuchkin/ec2-fleet>
-
 ## Older solutions: 
 (+2 years no updated & probably not nodejs > 0.8 compliant)
 So you can safely ignore these, but they can give inspiration
@@ -189,26 +239,12 @@ So you can safely ignore these, but they can give inspiration
 - <http://savanne.be/articles/deploying-node-js-with-systemd/>
 - [Stackoverflow discussion Domains or forever](http://stackoverflow.com/questions/14611749/forever-or-domain-which-of-them-is-better-for-node-js-continuous-work#comment20409657_14614261)
 
-# Testing
-- mocha for mocha-watch
-- sinon for spies, mocks, stubs
-- nock for HTTP testing
-- zombie for testing 
-- phantomjs
-- passport-stub
-
-- mocha, vows, expect, ...
-- zombie - http testing
-- for socketio (force new connection)
-
-use a grunt setup
-
 # Profiling
 **to be investigated**
 - <http://naholyr.fr/2012/09/profiler-son-application-nodejs/>
 - <http://mindon.github.io/blog/2012/04/26/profiling-nodejs-application/>
 
-## Helpers
+## Profiling tools
 - <https://github.com/bnoordhuis/node-profiler>
 - <http://nodetime.com/>
 - <https://github.com/dannycoates/node-inspector>
@@ -232,14 +268,6 @@ use a grunt setup
 - <http://s.urge.omniti.net/i/content/slides/Surge2012-DavidP_Nodejs.pdf>
 - <https://npmjs.org/package/nodetrace>
 
-# Versioning
-- use semver versioning in package.json
-- shrinkwrap (freeze your dependencies)
-
-- dependencies
-- optionalDependencies
-- [peerDependencies: use for plugins](http://blog.nodejs.org/2013/02/07/peer-dependencies/)
-
 # Memory
 - <http://qzaidi.github.io/2012/08/05/pstack-for-nodejs/>
 - <https://gist.github.com/qzaidi/3254449>
@@ -248,83 +276,6 @@ use a grunt setup
 - <https://github.com/jedp/node-memwatch-demo>
 - <http://code.osnap.us/wp/?p=43>
 - <http://simonmcmanus.wordpress.com/2013/01/03/forcing-garbage-collection-with-node-js-and-v8/>
-
-# Loadbalancer/SSL Termination
-
-- <http://www.ericmartindale.com/2012/07/19/mitigating-the-beast-tls-attack-in-nodejs/>
-
-- proxy in express
-- in socketIO proxy
-- HonorCiphers
-- SSL offload via HAProxy 1.5dev (also websockets)
-  brew install haproxy --devel
- - remove header express version
-- Oauth
-- CA options is an array
-- SSL correct settings
-- Perfect secrecy
-
-- offload your SSL
-- CA param is an array (add provider Certs)
-- strictCipher, SSL attacks
-- perfect secrecy
-- SSL insecure!
-- express proxy setting (X-...
-- in socket.io (authentication Secure..) , Proxy
-
-# Authz/Authn
-- passport.js
-- csrf in express <http://www.senchalabs.org/connect/middleware-csrf.html>
-- helmet in express - <https://github.com/evilpacket/helmet>
-- use bcrypt password - <http://codahale.com/how-to-safely-store-a-password/>
-- link sessions socketio/express - <https://github.com/camarao/session.socket.io>
-
-## Logging
-- wiston
-- singleton
-- logstash
-
-## Packaging
-- bashpack
-- npm pack
-
-## Ugly Security wise
-
-- input/output checker
-
-<http://www.slideshare.net/BishanSingh/node-security-the-good-bad-ugly>
-console.log(with beep char);
-JSON.parse
-- Preinstall in npm
-<http://www.slideshare.net/ASF-WS/asfws-2012-nodejs-security-old-vulnerabilities-in-new-dresses-par-sven-vetsch>
-<https://www.google.be/url?sa=t&rct=j&q=&esrc=s&source=web&cd=14&ved=0CEQQFjADOAo&url=http%3A%2F%2Flab.cs.ttu.ee%2Fdl93&ei=WEndUYe4C8PKhAeztIHIDw&usg=AFQjCNE0MMCy8ZYdpi5O0gzr-2Qy5e2phg&sig2=6lFYPQ-FtKzKGHYoDcnL9Q>
-
-- The request size is also not limited by Node.js which means that a large POST request can be sent to fill the whole memory. 
-
-Mostly NPM is ran with root privileges.
-Use objectProperties that cannot be changed
-String sanitizer - <https://github.com/chriso/node-validator>
-
-Fusker - fight back - <https://github.com/wearefractal/fusker>
-
-<https://github.com/revington/connect-bruteforce>
-<https://github.com/dharmafly/connect-ratelimit>
-
-<http://stackoverflow.com/questions/14991963/socket-io-server-throttling-a-fast-client>
-
-# Cookie/Sessions
-- secure, http-only, signed cookies
-- csrf attack connect.csrf
-- helmet other security headers
-- RedisStore backed
-- connect-sessionIO
-- redisstore with hiredis (reuse connection)
-
-# Logging
-- use singleton in your code instead of passing it around
-- like winston (has , mute, prettyprint, json metadata)
-- integrate in socketIO as logger
-- integrate in express as stream
 
 # 'Known' Limits/Tuning
 - ulimit Filedescriptors
@@ -498,4 +449,85 @@ We have been using it in production for a while now, and it is working as expect
 ## Configuration Mgmtm
 - redis
 - chef nodejs
-    statsd store all unique values between flushes, and sends the number of elements in the set to graphite.
+
+# Continous delivery
+- Use of forever <https://github.com/nodejitsu/forever> - just kidding
+
+### Fleet: Extending the easy Git -> deploy
+- Initial blogpost on fleet: <http://blog.nodejs.org/2012/05/02/multi-server-continuous-deployment-with-fleet/>
+- Fleet - uses drones & propagit: <https://github.com/substack/fleet>
+- Propagit: A cascading git deployment: <https://github.com/substack/propagit>
+- blogpost on fleet usage: <http://opsite.wordpress.com/2013/05/04/automated-drone-management-system-for-node-js-fleet/>
+
+- Flotilla: <https://npmjs.org/package/flotilla> 
+- All nodejs fleet modules: <https://nodejsmodules.org/new/tags/fleet>
+- <https://github.com/tblobaum/fleet-panel>
+- <https://github.com/carlos8f/fleet>
+- <https://github.com/nisaacson/fleet-stopall>
+- <https://github.com/nisaacson/fleet-atc>
+- <https://github.com/nisaacson/fleet-stopregex>
+ 
+Not related, but also cool: EC2-fleet <https://github.com/ashtuchkin/ec2-fleet>
+
+# Authz/Authn
+- passport.js
+- csrf in express <http://www.senchalabs.org/connect/middleware-csrf.html>
+- helmet in express - <https://github.com/evilpacket/helmet>
+- use bcrypt password - <http://codahale.com/how-to-safely-store-a-password/>
+- link sessions socketio/express - <https://github.com/camarao/session.socket.io>
+
+# Loadbalancer/SSL Termination
+
+- <http://www.ericmartindale.com/2012/07/19/mitigating-the-beast-tls-attack-in-nodejs/>
+
+- proxy in express
+- in socketIO proxy
+- HonorCiphers
+- SSL offload via HAProxy 1.5dev (also websockets)
+  brew install haproxy --devel
+ - remove header express version
+- Oauth
+- CA options is an array
+- SSL correct settings
+- Perfect secrecy
+
+- offload your SSL
+- CA param is an array (add provider Certs)
+- strictCipher, SSL attacks
+- perfect secrecy
+- SSL insecure!
+- express proxy setting (X-...
+- in socket.io (authentication Secure..) , Proxy
+
+# Security stuff
+
+## Various
+- input/output checker
+
+<http://www.slideshare.net/BishanSingh/node-security-the-good-bad-ugly>
+console.log(with beep char);
+JSON.parse
+- Preinstall in npm
+<http://www.slideshare.net/ASF-WS/asfws-2012-nodejs-security-old-vulnerabilities-in-new-dresses-par-sven-vetsch>
+<https://www.google.be/url?sa=t&rct=j&q=&esrc=s&source=web&cd=14&ved=0CEQQFjADOAo&url=http%3A%2F%2Flab.cs.ttu.ee%2Fdl93&ei=WEndUYe4C8PKhAeztIHIDw&usg=AFQjCNE0MMCy8ZYdpi5O0gzr-2Qy5e2phg&sig2=6lFYPQ-FtKzKGHYoDcnL9Q>
+
+- The request size is also not limited by Node.js which means that a large POST request can be sent to fill the whole memory. 
+
+Mostly NPM is ran with root privileges.
+Use objectProperties that cannot be changed
+String sanitizer - <https://github.com/chriso/node-validator>
+
+Fusker - fight back - <https://github.com/wearefractal/fusker>
+
+<https://github.com/revington/connect-bruteforce>
+<https://github.com/dharmafly/connect-ratelimit>
+
+<http://stackoverflow.com/questions/14991963/socket-io-server-throttling-a-fast-client>
+
+## Cookie/Sessions
+- secure, http-only, signed cookies
+- csrf attack connect.csrf
+- helmet other security headers
+- RedisStore backed
+- connect-sessionIO
+- redisstore with hiredis (reuse connection)
