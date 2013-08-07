@@ -16,7 +16,7 @@
 - use ```var a = 'bla'``` ;
 
 ## avoid using eval, with, switch: (without defaults)
-- use ```'use strict';a``` or  : ```$ node --use_strict```
+- use ```'use strict';``` or  : ```$ node --use_strict```
 
 <http://bishankochher.blogspot.fr/2012/02/nodejs-with-is-evil.html>
 ## don't run npm as root:
@@ -49,13 +49,15 @@
 use a grunt setup
 
 # Versioning & Packaging
-- use semver versioning in package.json
-- shrinkwrap (freeze your dependencies)
+- use [semver](http://semver.org) versioning in package.json
 
+## Dependencies in package.json
 - dependencies
+- shrinkwrap (freeze your dependencies)
 - optionalDependencies
 - [peerDependencies: use for plugins](http://blog.nodejs.org/2013/02/07/peer-dependencies/)
 
+## Packaging
 - npm pack
 - [bashpack](https://github.com/jedi4ever/bashpack) (turns a nodejs process in bash script)
 
@@ -117,19 +119,17 @@ I like <https://github.com/flatiron/winston/>
 
 - Has the logger.log, logger.info, logger.debug etc.
 - Can separate multiple ``tags`` : <https://github.com/jedi4ever/socialapp/blob/master/lib/utils/logger.js>
-
 - Create as a singleton, require and reuse in other modules (module cache will reuse same object)
 
-```var logger = function (options) {
+  var logger = function (options) {
 
   // If we have already been initialized
   if (sharedLogger) {
     return sharedLogger;
   }
-```
 
-```var logger = require('../utils/logger')().loggers.get('express');
-```
+
+```var logger = require('../utils/logger')().loggers.get('express'); ```
 
 ## Multiple Outputs
 - Console, File logging, rotation
@@ -139,7 +139,7 @@ I like <https://github.com/flatiron/winston/>
   - UDP: <https://gist.github.com/mbrevoort/5848179>
 
 ## Use in express
-```
+
     // enable web server logging; pipe those log messages through winston
     // http://stackoverflow.com/questions/9141358/how-do-i-output-connect-expresss-logger-output-to-winston
     var winstonStream = {
@@ -148,7 +148,6 @@ I like <https://github.com/flatiron/winston/>
       }
     };
     expressApp.use(express.logger({stream: winstonStream}));
-```
 
 ## Use in socketio
 
@@ -296,7 +295,7 @@ Use statsd backend to send counters, timers etc..
 - [fasterize/node-statsd-profiler](https://github.com/fasterize/node-statsd-profiler) has transformation function
 - [godmodelabs/statistik](https://github.com/godmodelabs/statistik) has a CLI interface
 
-### <https://github.com/sivy/node-statsd/>
+## <https://github.com/sivy/node-statsd/>
 
 - reuse UDP connection: yes
 - prefix: yes
@@ -316,7 +315,7 @@ Use statsd backend to send counters, timers etc..
 - batch: yes
 - callback: yes
 
-### <https://github.com/dscape/lynx>
+## <https://github.com/dscape/lynx>
 - reuse UDP connection: yes (+ provide your own)
 - prefix: yes (called scope)
 - error:  provide an error function
@@ -333,7 +332,7 @@ Use statsd backend to send counters, timers etc..
 __special__:
 - uses as stream in/out: yes (uses parser)
 
-### <https://github.com/msiebuhr/node-statsd-client>
+## <https://github.com/msiebuhr/node-statsd-client>
 - reuse UDP connections: yes (ephemeral socket)
 - prefix: yes
 
@@ -349,7 +348,7 @@ __special__
 - children (multi prefix)
 - express helper: yes (or per URL)
 
-### <https://github.com/Singly/statsd-singly>
+## <https://github.com/Singly/statsd-singly>
 
 - **reuse UDP: no**
 - callback: yes (but default prints to console)
@@ -365,7 +364,7 @@ __special__
 - sets: yes (called modify)
 - timings: (delays)
 
-### <https://github.com/fasterize/node-statsd-profiler>
+## <https://github.com/fasterize/node-statsd-profiler>
 (fork from node-statsd)
 
 - samplerate: yes
@@ -383,8 +382,7 @@ __special__:
 - introduces: key aliases
 - transformKey function: YES
 
-
-### <https://github.com/spreaker/nodejs-statsd-client>
+## <https://github.com/spreaker/nodejs-statsd-client>
 Note: you can safely ignore this lib
 
 - **reuse UDP connection: no**
@@ -398,7 +396,7 @@ Note: you can safely ignore this lib
 - **samplerate: no**
 - **callback: no**
 
-### <https://github.com/godmodelabs/statistik>
+## <https://github.com/godmodelabs/statistik>
 Note: use node-statsd instead unless cli is something special for you. The feature set is smaller than node-statsd and no special features, so we'll ignore this
 
 - udp connection reuse: no
@@ -442,11 +440,11 @@ We have been using it in production for a while now, and it is working as expect
     Maintaining that state across application servers to manually update gauges is non-trivial.
     We send a message to statsd containing the id of the user making a request.
 
-## CI
+# CI
 - Jenkins, Circle CI, TravisCI
 - Chat bot in Campfire
 
-## Configuration Mgmtm
+# Configuration Mgmtm
 - redis
 - chef nodejs
 
@@ -490,6 +488,7 @@ Not related, but also cool: EC2-fleet <https://github.com/ashtuchkin/ec2-fleet>
 - CA options is an array
 - SSL correct settings
 - Perfect secrecy
+- ```process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';```
 
 - offload your SSL
 - CA param is an array (add provider Certs)
