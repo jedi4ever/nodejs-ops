@@ -74,6 +74,8 @@
 - [better-stack-traces](https://github.com/mjpizz/better-stack-traces)
 - [LongJohn (eventemitters)](http://www.mattinsler.com/post/26396305882/announcing-longjohn-long-stack-traces-for-node-js)
 - [Longer stacks in chai](https://npmjs.org/package/chai-stack)
+- <https://github.com/felixge/node-stack-trace>
+- <https://github.com/scaryzet/node-stack-parser>
 
 ## Listen for ALL errors
 - ```emit('error')``` makes the process exit if no listener:
@@ -94,7 +96,7 @@
 The fundamental benefit of Error objects is that they automatically keep track of where they were built and originated
 
 ## process.uncaughtException
-- it's very common in the nodejs world [to just exist on the exception](http://dshaw.github.io/2012-05-jsday/#/10)
+- it's very common in the nodejs world [to just exit on the exception](http://dshaw.github.io/2012-05-jsday/#/10)
 
 **Not sure if this still makes sense with domains**
 
@@ -109,6 +111,7 @@ but: in loops or others ``returns`` means something else
 
 ## callback(err) vs emit('error')
 **Not sure yet here**, both? only if callback, only if error listener?
+
 - <https://groups.google.com/forum/m/#!topic/nodejs/QZa6bookqL0>
 - <https://groups.google.com/forum/m/#!topic/nodejs/hqO0w6XgOlA>
 
@@ -116,7 +119,8 @@ but: in loops or others ``returns`` means something else
 I like <https://github.com/flatiron/winston/>
 
 - Has the logger.log, logger.info, logger.debug etc.
-- Can separate multiple ``tags`` : <https://github.com/jedi4ever/socialapp/blob/master/lib/utils/logger.js>
+- Can log metadata, or json objects
+- Can use multiple ``tags`` : <https://github.com/jedi4ever/socialapp/blob/master/lib/utils/logger.js>
 - Create as a singleton, require and reuse in other modules (module cache will reuse same object)
 
   var logger = function (options) {
@@ -125,7 +129,6 @@ I like <https://github.com/flatiron/winston/>
   if (sharedLogger) {
     return sharedLogger;
   }
-
 
 ```var logger = require('../utils/logger')().loggers.get('express'); ```
 
@@ -151,7 +154,14 @@ I like <https://github.com/flatiron/winston/>
 
 ``` var ioServer = socketIO.listen(webServer, { logger: logger , log:true});```
 
+
 # Clustering
+# Keep it up
+- Check if up - <http://pingdom.com>
+
+- Use of upstart/ forever <https://github.com/nodejitsu/forever> - just kidding
+- [Stackoverflow discussion Domains or forever](http://stackoverflow.com/questions/14611749/forever-or-domain-which-of-them-is-better-for-node-js-continuous-work#comment20409657_14614261)
+
 ## The basics
 Have multiple nodejs processes listen on the same socket.
 
@@ -234,7 +244,6 @@ So you can safely ignore these, but they can give inspiration
 
 ## Worth mentioning:
 - <http://savanne.be/articles/deploying-node-js-with-systemd/>
-- [Stackoverflow discussion Domains or forever](http://stackoverflow.com/questions/14611749/forever-or-domain-which-of-them-is-better-for-node-js-continuous-work#comment20409657_14614261)
 
 # Profiling
 **to be investigated**
@@ -438,16 +447,14 @@ We have been using it in production for a while now, and it is working as expect
     Maintaining that state across application servers to manually update gauges is non-trivial.
     We send a message to statsd containing the id of the user making a request.
 
-# CI
+# Continous Integration
 - Jenkins, Circle CI, TravisCI
 - Chat bot in Campfire
 
-# Configuration Mgmtm
+# Continous delivery
+## Configuration Mgmtm
 - redis
 - chef nodejs
-
-# Continous delivery
-- Use of forever <https://github.com/nodejitsu/forever> - just kidding
 
 ### Fleet: Extending the easy Git -> deploy
 - Initial blogpost on fleet: <http://blog.nodejs.org/2012/05/02/multi-server-continuous-deployment-with-fleet/>
