@@ -24,6 +24,8 @@
 
 ## don't run as root:
 - use process.setuid, gid - <http://blog.liftsecurity.io/post/37388272578/writing-secure-express-js-apps>
+- or sudo in your start script
+- or use authbind or similar for non-priviledged users
 
     http.createServer(app).listen(app.get('port'), function(){
      console.log("Express server listening on port " + app.get('port'));
@@ -31,19 +33,15 @@
      process.setuid(config.uid);
     });
 
-- or sudo in your start script
-- or use authbind or similar for non-priviledged users
-
 # Testing
-- mocha for mocha-watch
-- sinon for spies, mocks, stubs
-- nock for HTTP testing
-- zombie for testing 
+- mocha, vows, expect, ...
+- ``mocha watch``
+- [sinon for spies, mocks, stubs](http://sinonjs.org/docs/)
+- [nock for HTTP testing](https://github.com/flatiron/nock)
+- [zombie for testing](http://zombie.labnotes.org/API)
 - phantomjs
 - passport-stub
-- mocha, vows, expect, ...
-- zombie - http testing
-- for socketio (force new connection)
+- for socketio in async tests (force new connection)
 
 [use a grunt setup - example](https://github.com/jedi4ever/socialapp/blob/master/Gruntfile.js)
 
@@ -51,13 +49,13 @@
 - use [semver](http://semver.org) versioning in package.json
 
 ## Dependencies in package.json
-- dependencies
-- shrinkwrap (freeze your dependencies)
+- dependencies , dev-dependencies
 - optionalDependencies
+- [shrinkwrap (freeze your dependencies)](http://blog.nodejs.org/2012/02/27/managing-node-js-dependencies-with-shrinkwrap/)
 - [peerDependencies: use for plugins](http://blog.nodejs.org/2013/02/07/peer-dependencies/)
 
 ## Packaging
-- npm pack
+- ```npm pack```
 - [bashpack](https://github.com/jedi4ever/bashpack) (turns a nodejs process in bash script)
 
 # Error handling
@@ -97,6 +95,7 @@ The fundamental benefit of Error objects is that they automatically keep track o
 
 ## process.uncaughtException
 - it's very common in the nodejs world [to just exist on the exception](http://dshaw.github.io/2012-05-jsday/#/10)
+
 **Not sure if this still makes sense with domains**
 
 ## return on a callback
@@ -532,3 +531,8 @@ Fusker - fight back - <https://github.com/wearefractal/fusker>
 - RedisStore backed
 - connect-sessionIO
 - redisstore with hiredis (reuse connection)
+
+#CLI stuff
+- commander
+- shell.js
+- ssh2
