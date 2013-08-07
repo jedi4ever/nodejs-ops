@@ -25,11 +25,11 @@
 ## don't run as root:
 - use process.setuid, gid - <http://blog.liftsecurity.io/post/37388272578/writing-secure-express-js-apps>
 
-```http.createServer(app).listen(app.get('port'), function(){
- console.log("Express server listening on port " + app.get('port'));
- process.setgid(config.gid);
- process.setuid(config.uid);
-});```
+    http.createServer(app).listen(app.get('port'), function(){
+     console.log("Express server listening on port " + app.get('port'));
+     process.setgid(config.gid);
+     process.setuid(config.uid);
+    });
 
 - or sudo in your start script
 - or use authbind or similar for non-priviledged users
@@ -41,12 +41,11 @@
 - zombie for testing 
 - phantomjs
 - passport-stub
-
 - mocha, vows, expect, ...
 - zombie - http testing
 - for socketio (force new connection)
 
-use a grunt setup
+[use a grunt setup - example](https://github.com/jedi4ever/socialapp/blob/master/Gruntfile.js)
 
 # Versioning & Packaging
 - use [semver](http://semver.org) versioning in package.json
@@ -477,7 +476,6 @@ Not related, but also cool: EC2-fleet <https://github.com/ashtuchkin/ec2-fleet>
 # Loadbalancer/SSL Termination
 
 - <http://www.ericmartindale.com/2012/07/19/mitigating-the-beast-tls-attack-in-nodejs/>
-
 - proxy in express
 - in socketIO proxy
 - HonorCiphers
@@ -489,7 +487,6 @@ Not related, but also cool: EC2-fleet <https://github.com/ashtuchkin/ec2-fleet>
 - SSL correct settings
 - Perfect secrecy
 - ```process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';```
-
 - offload your SSL
 - CA param is an array (add provider Certs)
 - strictCipher, SSL attacks
@@ -497,6 +494,11 @@ Not related, but also cool: EC2-fleet <https://github.com/ashtuchkin/ec2-fleet>
 - SSL insecure!
 - express proxy setting (X-...
 - in socket.io (authentication Secure..) , Proxy
+
+    // req.ip , req.ips , req.protocol (http,https)
+        if (settings.terminated) {
+          expressApp.enable('trust proxy');
+        }
 
 # Security stuff
 
