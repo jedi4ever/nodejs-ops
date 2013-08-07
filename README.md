@@ -77,6 +77,22 @@
 - <https://github.com/felixge/node-stack-trace>
 - <https://github.com/scaryzet/node-stack-parser>
 
+Note that I recommend using ```function Foo() { ... }``` for constructors instead of ```var Foo = function() { ... }```
+<http://book.mixu.net/ch6.html>
+
+    // Constructor
+    function Foo(bar) { 
+      // always initialize all instance properties
+      this.bar = bar;
+      this.baz = 'baz'; // default value
+    }
+    // class methods
+    Foo.prototype.fooBar = function() {
+
+    };
+    // export the class
+    module.exports = Foo;
+
 ## Listen for ALL errors
 - ```emit('error')``` makes the process exit if no listener:
 - listen to http, redis connections , express, socketIO, log handler, metrics handler
